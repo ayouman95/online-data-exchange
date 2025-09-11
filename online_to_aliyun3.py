@@ -129,7 +129,7 @@ class BufferedUploader:
 
         # 构造 OSS 路径
         filename = f"{self.platform}.{self.geo3}.log.gz"
-        key = f"tracking-collect-data/track/{self.date_part}/{self.hour_part}/{filename}"
+        key = f"{ALI_BUCKET_NAME}/track/{self.date_part}/{self.hour_part}/{filename}"
 
         # 上传
         try:
