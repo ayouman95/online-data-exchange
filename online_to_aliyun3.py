@@ -4,6 +4,7 @@
 import os
 import json
 import logging
+import time
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 import pycountry
@@ -289,4 +290,7 @@ def build_cos_prefixes(date_str, hour_str):
 
 
 if __name__ == "__main__":
+    # 计算耗时
+    start_time = time.time()
     main()
+    logger.info(f"耗时: {time.time() - start_time} 秒")
