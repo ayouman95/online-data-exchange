@@ -256,7 +256,7 @@ def main():
             continue
 
         filename = f"{platform}.{geo3}.log.gz"
-        full_path = f"tracking-collect-data/track/{date_part}/{hour_part}/{filename}"
+        full_path = f"{ALI_BUCKET_NAME}/track/{date_part}/{hour_part}/{filename}"
 
         # 压缩
         content = '\n'.join(lines).encode('utf-8')
