@@ -144,10 +144,17 @@ class BufferedUploader:
 
 
 # ==== 主函数 ====
-def transform_line(data):
+def transform_line(data, geo3):
+    os = data.get("platform", "")
+    osi = 0
+    if os == "android":
+        osi = 2
+    if os == "ios":
+        osi = 1
+
     fields = [
-        data.get("country_code", ""),
-        data.get("platform", ""),
+        geo3.upper(),
+        osi,
         data.get("exchange", ""),
         data.get("deviceId", ""),
         data.get("brand", ""),
@@ -157,7 +164,8 @@ def transform_line(data):
         data.get("timestamp", ""),
         data.get("os_version", ""),
         data.get("app_id", ""),
-        data.get("model", "")
+        data.get("model", ""),
+        data.get("network_type", "")
     ]
 
     # 拼接为 @ 分隔字符串
@@ -226,15 +234,21 @@ def main():
 
                             try:
                                 data = json.loads(line)
+
                                 cc2 = data.get("country_code", "").strip().upper()
+                                if cc2 == "UK":
+                                    cc2 = "GB"
                                 platform = data.get("platform", "").strip().lower()
 
                                 if platform not in ["android", "ios"]:
                                     continue
 
                                 geo3 = country_2to3_lower(cc2)
+
+                                if geo3 == 'xxx':
+                                    continue
                                 uploader = get_uploader(platform, geo3)
-                                new_line = transform_line(line)
+                                new_line = transform_line(data, geo3)
                                 uploader.write(new_line)  # ⬅️ 边读边写！
 
                                 line_count += 1
