@@ -150,7 +150,7 @@ def fetch_all_logs(utc8_hour_dt):
                             'bucket': conf['bucket'],
                             'key': key
                         })
-                if not response.get('IsTruncated'):
+                if not response.get('isTruncated'):
                     break
                 marker = response.get('NextMarker', "")
             except Exception as e:
