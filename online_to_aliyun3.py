@@ -247,7 +247,7 @@ def main():
                     except Exception as e:
                         logger.error(f"❌ 处理失败 {key}: {e}")
 
-                if not response.get('IsTruncated'):
+                if not response.get('isTruncated'):
                     break
                 marker = response.get('NextMarker', "")
 
