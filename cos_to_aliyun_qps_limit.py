@@ -139,9 +139,9 @@ class BufferedUploader:
         self.gz_file.close()
 
         # 构造 OSS 路径
-        geo2Upper = country_3to2_upper(self.geo3)
-        filename = f"{self.date_part}-{self.hour_part}.{self.platform}.{geo2Upper}.log.gz"
-        key = f"{self.date_part}-{self.hour_part}/{geo2Upper}/{self.platform}/{filename}"
+        geo2_upper = country_3to2_upper(self.geo3)
+        filename = f"{self.date_part}-{self.hour_part}.{self.platform}.{geo2_upper}.log.gz"
+        key = f"{self.date_part}-{self.hour_part}/{geo2_upper}/{self.platform}/{filename}"
 
         # 上传
         try:

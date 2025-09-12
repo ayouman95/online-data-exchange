@@ -76,7 +76,12 @@ def country_2to3_lower(cc2):
     except Exception:
         return "xxx"
 
-
+def country_3to2_upper(cc3):
+    try:
+        country = pycountry.countries.get(alpha_3=cc3.upper())
+        return (country.alpha_2.upper()) if country else "xxx"
+    except Exception:
+        return "xxx"
 def get_time_ranges_for_previous_hour():
     now_utc = datetime.utcnow()
     prev_hour_utc = now_utc.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
@@ -141,8 +146,9 @@ class BufferedUploader:
         upload_executor.submit(self._do_upload, content)
 
     def _do_upload(self, content: bytes):
-        filename = f"{self.platform}.{self.geo3}.log.gz"
-        key = f"track/{self.date_part}/{self.hour_part}/{filename}"
+        geo2_upper = country_3to2_upper(self.geo3)
+        filename = f"{self.date_part}-{self.hour_part}.{self.platform}.{geo2_upper}.log.gz"
+        key = f"{self.date_part}-{self.hour_part}/{geo2_upper}/{self.platform}/{filename}"
         try:
             self.oss_bucket.put_object(key, content)
             logger.info(f"✅ 上传完成: {key} ({self.line_count} 行)")
@@ -202,11 +208,6 @@ def main():
     logger.info(f"发现 {len(file_list)} 个待处理文件，启动 {DOWNLOAD_WORKERS} 个下载线程...")
 
     def process_single_file(args):
-        # TODO: 如果所有uploader都已上传完成，则结束
-        if all(uploader.uploaded for uploader in uploaders.values()):
-            logger.info("所有文件已处理完毕，结束下载线程...")
-            return
-
         client, bucket_name, key = args
         line_count = 0
         try:
