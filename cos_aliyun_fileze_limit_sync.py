@@ -202,11 +202,6 @@ def main():
     logger.info(f"发现 {len(file_list)} 个待处理文件，启动 {DOWNLOAD_WORKERS} 个下载线程...")
 
     def process_single_file(args):
-        # TODO: 如果所有uploader都已上传完成，则结束
-        if all(uploader.uploaded for uploader in uploaders.values()):
-            logger.info("所有文件已处理完毕，结束下载线程...")
-            return
-
         client, bucket_name, key = args
         line_count = 0
         try:
