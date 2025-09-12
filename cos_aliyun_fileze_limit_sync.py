@@ -136,7 +136,6 @@ class BufferedUploader:
         self.gz_file.close()
         self.buffer.seek(0)
         content = self.buffer.read()
-        self.uploaded = True
 
         upload_executor.submit(self._do_upload, content)
 
@@ -148,6 +147,7 @@ class BufferedUploader:
             logger.info(f"✅ 上传完成: {key} ({self.line_count} 行)")
         except Exception as e:
             logger.error(f"❌ 上传失败 {key}: {e}")
+        self.uploaded = True
 
 
 # ==== 主函数 ====
