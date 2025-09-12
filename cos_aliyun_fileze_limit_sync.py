@@ -14,6 +14,7 @@ import threading
 
 from qcloud_cos import CosConfig, CosS3Client
 import oss2
+import orjson
 
 
 # ================== 配置区 ==================
@@ -210,7 +211,7 @@ def main():
                 if not line:
                     continue
                 try:
-                    data = json.loads(line)
+                    data = orjson.loads(line)
                     cc2 = data.get("country_code", "").strip().upper()
                     platform = data.get("platform", "").strip().lower()
 
