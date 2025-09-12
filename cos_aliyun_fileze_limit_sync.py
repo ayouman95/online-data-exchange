@@ -190,7 +190,7 @@ def main():
                 for item in contents:
                     if not item['Key'].endswith('/'):
                         file_list.append((conf['client'], conf['bucket'], item['Key']))
-                if not response.get('IsTruncated'):
+                if not response.get('isTruncated'):
                     break
                 marker = response.get('NextMarker', "")
             except Exception as e:
