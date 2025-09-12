@@ -99,10 +99,10 @@ def get_time_ranges_for_previous_hour():
 
 # ==== 核心：低内存上传器 ====
 class BufferedUploader:
-    def __init__(self, platform, geo3, limit_mb, oss_bucket, date_part, hour_part):
+    def __init__(self, platform, geo3, limit, oss_bucket, date_part, hour_part):
         self.platform = platform
         self.geo3 = geo3
-        self.limit_size = limit_mb * 1024 * 1024 if limit_mb else None
+        self.limit = limit
         self.oss_bucket = oss_bucket
         self.date_part = date_part
         self.hour_part = hour_part
@@ -123,7 +123,7 @@ class BufferedUploader:
         added_size = 1
 
         # 检查是否超限
-        if self.limit_size and self.current_size + added_size > self.limit_size * 3600:
+        if self.limit and self.current_size + added_size > self.limit * 3600:
             self._flush()  # 达到限制，立即上传
             return
 
@@ -204,8 +204,8 @@ def main():
     def get_uploader(platform, geo3):
         key = (platform, geo3)
         if key not in uploaders:
-            limit_mb = SIZE_LIMITS.get(key)
-            uploader = BufferedUploader(platform, geo3, limit_mb, bucket, date_part, hour_part)
+            limit = SIZE_LIMITS.get(key)
+            uploader = BufferedUploader(platform, geo3, limit, bucket, date_part, hour_part)
             uploaders[key] = uploader
         return uploaders[key]
 

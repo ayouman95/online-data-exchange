@@ -34,28 +34,32 @@ ALI_ACCESS_KEY_SECRET = os.environ["OSS_ACCESS_KEY_SECRET"]
 ALI_OSS_ENDPOINT = "https://oss-ap-southeast-1.aliyuncs.com"  # 替换为你实际的 endpoint
 ALI_BUCKET_NAME = "tracking-collect-data-test"  # TODO: 改成实际的
 
-SIZE_LIMITS_MB = {
-    ('android', 'idn'): 200,
-    ('android', 'tha'): 100,
-    ('android', 'phl'): 240,
-    ('android', 'ita'): 15,
-    ('android', 'pol'): 20,
-    ('android', 'nld'): 20,
-    ('android', 'bra'): 80,
-    ('android', 'mex'): 150,
-    ('android', 'zaf'): 20,
-    ('android', 'kor'): 7,
-    ('android', 'ukr'): 20,
-    ('android', 'can'): 11,
-    ('android', 'usa'): 40,
-    ('android', 'esp'): 35,
-    ('android', 'ind'): 75,
-    ('android', 'sau'): 70,
-    ('android', 'fra'): 50,
-    ('android', 'gbr'): 20,
-    ('android', 'deu'): 75,
-    ('android', 'are'): 40,
-    ('android', 'rus'): 200,
+SIZE_LIMITS = {
+    ('android', 'are'): 84,
+    ('android', 'bra'): 350,
+    ('android', 'can'): 61,
+    ('android', 'deu'): 228,
+    ('android', 'esp'): 203,
+    ('android', 'fra'): 177,
+    ('android', 'gbr'): 113,
+    ('android', 'idn'): 431,
+    ('android', 'ind'): 167,
+    ('android', 'ita'): 104,
+    ('android', 'mex'): 379,
+    ('android', 'mys'): 112,
+    ('android', 'gna'): 69,
+    ('android', 'pak'): 60,
+    ('android', 'phl'): 328,
+    ('android', 'rus'): 325,
+    ('android', 'sau'): 300,
+    ('ios', 'sau'): 50,
+    ('android', 'tha'): 210,
+    ('ios', 'tha'): 40,
+    ('android', 'tur'): 40,
+    ('ios', 'tur'): 4,
+    ('android', 'usa'): 500,
+    ('ios', 'usa'): 100,
+    ('android', 'vnm'): 190
 }
 
 # 并发配置
@@ -102,10 +106,10 @@ upload_executor = ThreadPoolExecutor(max_workers=UPLOAD_WORKERS)
 
 # ==== 高性能上传器 ====
 class BufferedUploader:
-    def __init__(self, platform, geo3, limit_mb, oss_bucket, date_part, hour_part):
+    def __init__(self, platform, geo3, limit, oss_bucket, date_part, hour_part):
         self.platform = platform
         self.geo3 = geo3
-        self.limit_bytes = limit_mb * 1024 * 1024 if limit_mb else None
+        self.limit = limit
         self.oss_bucket = oss_bucket
         self.date_part = date_part
         self.hour_part = hour_part
@@ -123,9 +127,9 @@ class BufferedUploader:
                 return
 
             line_bytes = (line + '\n').encode('utf-8')
-            added_size = len(line_bytes)
+            added_size = 1
 
-            if self.limit_bytes and self.current_size + added_size > self.limit_bytes:
+            if self.limit and self.current_size + added_size > self.limit * 3600:
                 self._submit_upload()  # 触发异步上传
                 return
 
@@ -177,8 +181,8 @@ def main():
         if key not in uploaders:
             with uploader_lock:
                 if key not in uploaders:  # double-check
-                    limit_mb = SIZE_LIMITS_MB.get(key)
-                    uploaders[key] = BufferedUploader(platform, geo3, limit_mb, bucket, date_part, hour_part)
+                    limit = SIZE_LIMITS.get(key)
+                    uploaders[key] = BufferedUploader(platform, geo3, limit, bucket, date_part, hour_part)
         return uploaders[key]
 
     # ===== 多线程下载所有文件 =====
@@ -235,9 +239,8 @@ def main():
                         continue
 
                     # 没有限制文件大小，则忽略
-                    if not SIZE_LIMITS_MB.get((platform, geo3)):
+                    if not SIZE_LIMITS.get((platform, geo3)):
                         continue
-
 
                     geo3 = country_2to3_lower(cc2)
                     uploader = get_uploader(platform, geo3)
