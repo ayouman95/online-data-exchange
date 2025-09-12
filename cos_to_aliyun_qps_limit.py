@@ -34,28 +34,32 @@ ALI_BUCKET_NAME = "tracking-collect-data-test"  # TODO: 改成实际的
 
 # 文件大小限制（单位：MB），key 为 (platform, geo3_lower)，value 为最大 MB 数
 # 示例：达到限制后不再追加数据，直接上传已有部分
-SIZE_LIMITS_MB = {
-    ('android', 'idn'): 200,
-    ('android', 'tha'): 100,
-    ('android', 'phl'): 240,
-    ('android', 'ita'): 15,
-    ('android', 'pol'): 20,
-    ('android', 'nld'): 20,
-    ('android', 'bra'): 80,
-    ('android', 'mex'): 150,
-    ('android', 'zaf'): 20,
-    ('android', 'kor'): 7,
-    ('android', 'ukr'): 20,
-    ('android', 'can'): 11,
-    ('android', 'usa'): 40,
-    ('android', 'esp'): 35,
-    ('android', 'ind'): 75,
-    ('android', 'sau'): 70,
-    ('android', 'fra'): 50,
-    ('android', 'gbr'): 20,
-    ('android', 'deu'): 75,
-    ('android', 'are'): 40,
-    ('android', 'rus'): 200,
+SIZE_LIMITS = {
+    ('android', 'are'): 84,
+    ('android', 'bra'): 350,
+    ('android', 'can'): 61,
+    ('android', 'deu'): 228,
+    ('android', 'esp'): 203,
+    ('android', 'fra'): 177,
+    ('android', 'gbr'): 113,
+    ('android', 'idn'): 431,
+    ('android', 'ind'): 167,
+    ('android', 'ita'): 104,
+    ('android', 'mex'): 379,
+    ('android', 'mys'): 112,
+    ('android', 'gna'): 69,
+    ('android', 'pak'): 60,
+    ('android', 'phl'): 328,
+    ('android', 'rus'): 325,
+    ('android', 'sau'): 300,
+    ('ios', 'sau'): 50,
+    ('android', 'tha'): 210,
+    ('ios', 'tha'): 40,
+    ('android', 'tur'): 40,
+    ('ios', 'tur'): 4,
+    ('android', 'usa'): 500,
+    ('ios', 'usa'): 100,
+    ('android', 'vnm'): 190
 }
 
 logging.basicConfig(
@@ -67,8 +71,14 @@ logger = logging.getLogger(__name__)
 
 def country_2to3_lower(cc2):
     try:
-        country = pycountry.countries.get(alpha_2=cc2)
+        country = pycountry.countries.get(alpha_2=cc2.upper())
         return country.alpha_3.lower() if country else "xxx"
+    except Exception:
+        return "xxx"
+def country_3to2_upper(cc3):
+    try:
+        country = pycountry.countries.get(alpha_3=cc3.upper())
+        return (country.alpha_2.upper()) if country else "xxx"
     except Exception:
         return "xxx"
 
@@ -92,7 +102,7 @@ class BufferedUploader:
     def __init__(self, platform, geo3, limit_mb, oss_bucket, date_part, hour_part):
         self.platform = platform
         self.geo3 = geo3
-        self.limit_bytes = limit_mb * 1024 * 1024 if limit_mb else None
+        self.limit_size = limit_mb * 1024 * 1024 if limit_mb else None
         self.oss_bucket = oss_bucket
         self.date_part = date_part
         self.hour_part = hour_part
@@ -110,10 +120,10 @@ class BufferedUploader:
             return
 
         line_bytes = (line + '\n').encode('utf-8')
-        added_size = len(line_bytes)
+        added_size = 1
 
         # 检查是否超限
-        if self.limit_bytes and self.current_size + added_size > self.limit_bytes:
+        if self.limit_size and self.current_size + added_size > self.limit_size * 3600:
             self._flush()  # 达到限制，立即上传
             return
 
@@ -129,8 +139,9 @@ class BufferedUploader:
         self.gz_file.close()
 
         # 构造 OSS 路径
-        filename = f"{self.platform}.{self.geo3}.log.gz"
-        key = f"{ALI_BUCKET_NAME}/track/{self.date_part}/{self.hour_part}/{filename}"
+        geo2Upper = country_3to2_upper(self.geo3)
+        filename = f"{self.date_part}-{self.hour_part}.{self.platform}.{geo2Upper}.log.gz"
+        key = f"{self.date_part}-{self.hour_part}/{geo2Upper}/{self.platform}/{filename}"
 
         # 上传
         try:
@@ -156,7 +167,7 @@ def transform_line(data, geo3):
     fields = [
         geo3.upper(),
         osi,
-        data.get("exchange", ""),
+        data.get("display_manager", ""),
         data.get("deviceId", ""),
         data.get("brand", ""),
         data.get("user_agent", ""),
@@ -193,7 +204,7 @@ def main():
     def get_uploader(platform, geo3):
         key = (platform, geo3)
         if key not in uploaders:
-            limit_mb = SIZE_LIMITS_MB.get(key)
+            limit_mb = SIZE_LIMITS.get(key)
             uploader = BufferedUploader(platform, geo3, limit_mb, bucket, date_part, hour_part)
             uploaders[key] = uploader
         return uploaders[key]
@@ -236,6 +247,7 @@ def main():
                             try:
                                 data = json.loads(line)
 
+                                # 矫正国家
                                 cc2 = data.get("country_code", "").strip().upper()
                                 if cc2 == "UK":
                                     cc2 = "GB"
@@ -244,9 +256,13 @@ def main():
                                 if platform not in ["android", "ios"]:
                                     continue
 
+                                # 如果找不到三位国家代码，则忽略
                                 geo3 = country_2to3_lower(cc2)
-
                                 if geo3 == 'xxx':
+                                    continue
+
+                                # 没有限制文件大小，则忽略
+                                if not SIZE_LIMITS.get((platform, geo3)):
                                     continue
                                 uploader = get_uploader(platform, geo3)
                                 new_line = transform_line(data, geo3)
