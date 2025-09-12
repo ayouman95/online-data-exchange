@@ -57,7 +57,7 @@ SIZE_LIMITS_MB = {
 }
 
 # 并发配置
-DOWNLOAD_WORKERS = 4   # 下载并发数（建议 = CPU 核数）
+DOWNLOAD_WORKERS = 8   # 下载并发数（建议 = CPU 核数）
 UPLOAD_WORKERS = 4     # 上传并发数
 
 logging.basicConfig(
@@ -297,4 +297,7 @@ def build_cos_prefixes(date_str, hour_str):
 
 
 if __name__ == "__main__":
+    # 计算耗时
+    start_time = time.time()
     main()
+    logger.info(f"耗时: {time.time() - start_time} 秒")
