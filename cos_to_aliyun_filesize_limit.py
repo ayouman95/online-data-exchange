@@ -18,7 +18,7 @@ import oss2
 # ================== 配置区 ==================
 TENCENT_SECRET_ID = os.environ['COS_SECRET_ID']
 TENCENT_SECRET_KEY = os.environ['COS_SECRET_KEY']
-TENCENT_REGION_LIST = ['de', 'sg', 'us']
+SELECT_REGION = os.environ.get('SELECT_REGION').lower()
 TENCENT_APPID = "1374116111"
 COS_REGION_MAP = {
     'de': 'eu-frankfurt',
@@ -284,13 +284,12 @@ def main():
 
 def build_cos_prefixes(date_str, hour_str):
     prefixes = []
-    for region in TENCENT_REGION_LIST:
-        bucket_name = f"pando-adx-{region}-{TENCENT_APPID}"
-        prefix = f"adx_device/request/{date_str}/{hour_str}/"
-        region_cos = COS_REGION_MAP[region]
-        config = CosConfig(Region=region_cos, SecretId=TENCENT_SECRET_ID, SecretKey=TENCENT_SECRET_KEY)
-        client = CosS3Client(config)
-        prefixes.append({'bucket': bucket_name, 'prefix': prefix, 'client': client})
+    bucket_name = f"pando-adx-{SELECT_REGION}-{TENCENT_APPID}"
+    prefix = f"adx_device/request/{date_str}/{hour_str}/"
+    region_cos = COS_REGION_MAP[SELECT_REGION]
+    config = CosConfig(Region=region_cos, SecretId=TENCENT_SECRET_ID, SecretKey=TENCENT_SECRET_KEY)
+    client = CosS3Client(config)
+    prefixes.append({'bucket': bucket_name, 'prefix': prefix, 'client': client})
     return prefixes
 
 
