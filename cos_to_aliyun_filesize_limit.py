@@ -36,7 +36,7 @@ ALI_BUCKET_NAME = "tracking-collect-data-test"  # TODO: 改成实际的
 # 示例：达到限制后不再追加数据，直接上传已有部分
 SIZE_LIMITS_MB = {
     ('android', 'are'): 10,
-    ('android', 'bra'): 180,
+    ('android', 'bra'): 150,
     ('android', 'can'): 10,
     ('android', 'deu'): 10,
     ('android', 'esp'): 30,
