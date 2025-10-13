@@ -124,6 +124,7 @@ class BufferedUploader:
 
         # 检查是否超限
         if self.limit and self.current_size + added_size > self.limit * 3600:
+            logger.info(f"⚠️ 达到限制: {self.platform}.{self.geo3}.log.gz ({self.line_count} 行, {self.current_size} 字节)")
             self._flush()  # 达到限制，立即上传
             return
 
@@ -262,8 +263,8 @@ def main():
                                     continue
 
                                 # 没有限制文件大小，则忽略
-                                if not SIZE_LIMITS.get((platform, geo3)):
-                                    continue
+                                # if not SIZE_LIMITS.get((platform, geo3)):
+                                #     continue
                                 uploader = get_uploader(platform, geo3)
                                 new_line = transform_line(data, geo3)
                                 uploader.write(new_line)  # ⬅️ 边读边写！
