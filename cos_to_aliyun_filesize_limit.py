@@ -46,7 +46,7 @@ SIZE_LIMITS_MB = {
     ('android', 'ind'): 20,
     ('android', 'ita'): 10,
     ('android', 'kor'): 10,
-    ('android', 'mex'): 70,
+    ('android', 'mex'): 100,
     ('android', 'nld'): 10,
     ('android', 'phl'): 80,
     ('android', 'pol'): 10,
@@ -54,7 +54,7 @@ SIZE_LIMITS_MB = {
     ('android', 'sau'): 30,
     ('android', 'tha'): 40,
     ('android', 'ukr'): 10,
-    ('android', 'usa'): 60,
+    ('android', 'usa'): 85,
 }
 
 logging.basicConfig(
