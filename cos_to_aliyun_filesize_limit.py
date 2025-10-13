@@ -114,6 +114,7 @@ class BufferedUploader:
 
         # 检查是否超限
         if self.limit_bytes and self.current_size + added_size > self.limit_bytes:
+            logger.info(f"⚠️ 达到限制: {self.platform}.{self.geo3}.log.gz ({self.line_count} 行, {self.current_size} 字节)")
             self._flush()  # 达到限制，立即上传
             return
 
@@ -193,7 +194,7 @@ def main():
     def get_uploader(platform, geo3):
         key = (platform, geo3)
         if key not in uploaders:
-            limit_mb = SIZE_LIMITS_MB.get(key) * 10
+            limit_mb = SIZE_LIMITS_MB.get(key) * 5
             uploader = BufferedUploader(platform, geo3, limit_mb, bucket, date_part, hour_part)
             uploaders[key] = uploader
         return uploaders[key]
