@@ -193,7 +193,7 @@ def main():
     def get_uploader(platform, geo3):
         key = (platform, geo3)
         if key not in uploaders:
-            limit_mb = SIZE_LIMITS_MB.get(key)
+            limit_mb = SIZE_LIMITS_MB.get(key) * 10
             uploader = BufferedUploader(platform, geo3, limit_mb, bucket, date_part, hour_part)
             uploaders[key] = uploader
         return uploaders[key]
