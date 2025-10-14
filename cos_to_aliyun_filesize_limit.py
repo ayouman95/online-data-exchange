@@ -30,7 +30,7 @@ COS_REGION_MAP = {
 ALI_ACCESS_KEY_ID = os.environ["OSS_ACCESS_KEY_ID"]
 ALI_ACCESS_KEY_SECRET = os.environ["OSS_ACCESS_KEY_SECRET"]
 ALI_OSS_ENDPOINT = "https://oss-ap-southeast-1.aliyuncs.com"  # 替换为你实际的 endpoint
-ALI_BUCKET_NAME = "tracking-collect-data-test"  # TODO: 改成实际的
+ALI_BUCKET_NAME = "tracking-collect-data"
 
 # 文件大小限制（单位：MB），key 为 (platform, geo3_lower)，value 为最大 MB 数
 # 示例：达到限制后不再追加数据，直接上传已有部分
