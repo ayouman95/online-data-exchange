@@ -27,8 +27,8 @@ COS_REGION_MAP = {
 }
 
 # 阿里云 OSS 配置（路径时间基于 UTC+0）
-ALI_ACCESS_KEY_ID = os.environ["OSS_ACCESS_KEY_ID"]
-ALI_ACCESS_KEY_SECRET = os.environ["OSS_ACCESS_KEY_SECRET"]
+ALI_ACCESS_KEY_ID = os.environ["OSS_ACCESS_KEY_ID_ALI"]
+ALI_ACCESS_KEY_SECRET = os.environ["OSS_ACCESS_KEY_SECRET_ALI"]
 ALI_OSS_ENDPOINT = "https://oss-ap-southeast-1.aliyuncs.com"  # 替换为你实际的 endpoint
 ALI_BUCKET_NAME = "tracking-collect-data"
 
