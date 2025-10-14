@@ -29,7 +29,7 @@ COS_REGION_MAP = {
 # 阿里云 OSS 配置（路径时间基于 UTC+0）
 ALI_ACCESS_KEY_ID = os.environ["OSS_ACCESS_KEY_ID_UNITY"]
 ALI_ACCESS_KEY_SECRET = os.environ["OSS_ACCESS_KEY_SECRET_UNITY"]
-ALI_OSS_ENDPOINT = "https://oss-ap-southeast-1.aliyuncs.com"  # 替换为你实际的 endpoint
+ALI_OSS_ENDPOINT = "https://oss-us-east-1.aliyuncs.com"  # 替换为你实际的 endpoint
 ALI_BUCKET_NAME = "adx-device-exchange"
 
 # 文件大小限制（单位：MB），key 为 (platform, geo3_lower)，value 为最大 MB 数
