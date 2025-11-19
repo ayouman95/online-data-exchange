@@ -23,7 +23,7 @@ TENCENT_APPID = "1374116111"
 COS_REGION_MAP = {
     'de': 'eu-frankfurt',
     'sg': 'ap-singapore',
-    'us': 'na-siliconvalley'
+    'us': 'na-ashburn'
 }
 
 # 阿里云 OSS 配置（路径时间基于 UTC+0）
