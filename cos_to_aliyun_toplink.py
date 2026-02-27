@@ -127,7 +127,10 @@ class BufferedUploader:
 
     def write(self, line):
         if self.uploaded:
-            return
+            return False
+
+        self.gz_file.write((line + '\n').encode('utf-8'))
+        self.line_count += 1
 
         if self.max_lines and self.line_count >= self.max_lines:
             logger.info(
@@ -135,10 +138,8 @@ class BufferedUploader:
                 f"({self.line_count} 行, 上限 {self.max_lines} 行)"
             )
             self._flush()
-            return
 
-        self.gz_file.write((line + '\n').encode('utf-8'))
-        self.line_count += 1
+        return True
 
     def _flush(self):
         if self.line_count == 0 or self.uploaded:
@@ -241,7 +242,17 @@ def main():
     date_part = utc0_hour_dt.strftime("%Y-%m-%d")
     hour_part = utc0_hour_dt.strftime("%H")
 
-    uploaders = {}
+    uploaders = {
+        key: BufferedUploader(
+            key[0],
+            key[1],
+            QPS_LIMITS[key],
+            bucket,
+            date_part,
+            hour_part,
+        )
+        for key in QPS_LIMITS
+    }
     device_filter = BloomFilter(capacity=BLOOM_FILTER_CAPACITY, error_rate=BLOOM_FILTER_ERROR_RATE)
 
     stats = {
@@ -252,21 +263,18 @@ def main():
     }
 
     def get_uploader(platform, geo3):
-        key = (platform, geo3)
-        if key not in uploaders:
-            uploaders[key] = BufferedUploader(
-                platform,
-                geo3,
-                QPS_LIMITS.get(key),
-                bucket,
-                date_part,
-                hour_part,
-            )
-        return uploaders[key]
+        return uploaders[(platform, geo3)]
+
+    def all_targets_uploaded():
+        return all(uploader.uploaded for uploader in uploaders.values())
 
     prefixes = build_cos_prefixes(utc8_hour_dt.strftime("%Y%m%d"), utc8_hour_dt.strftime("%H"))
 
     for conf in prefixes:
+        if all_targets_uploaded():
+            logger.info("✅ 所有 QPS_LIMITS 目标文件均已上传，停止继续读取原始数据。")
+            break
+
         try:
             keys = list_cos_keys(conf["client"], conf["bucket"], conf["prefix"])
         except Exception as exc:
@@ -279,6 +287,10 @@ def main():
         logger.info(f"📂 开始处理 minute={conf['minute']:02d}, 文件数={len(keys)}")
 
         for key in keys:
+            if all_targets_uploaded():
+                logger.info("✅ 所有 QPS_LIMITS 目标文件均已上传，停止继续读取原始数据。")
+                break
+
             stats["total_files"] += 1
 
             try:
@@ -315,8 +327,8 @@ def main():
                     device_filter.add(device_id)
 
                     uploader = get_uploader(platform, geo3)
-                    uploader.write(transform_line(data, geo3))
-                    file_written_lines += 1
+                    if uploader.write(transform_line(data, geo3)):
+                        file_written_lines += 1
 
                 stats["written_lines"] += file_written_lines
                 logger.info(f"✅ 处理完成: {key} ({file_written_lines} 行)")
