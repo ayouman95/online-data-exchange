@@ -148,7 +148,7 @@ class BufferedUploader:
         self.gz_file.close()
 
         geo2_upper = country_3to2_upper(self.geo3)
-        filename = f"{self.date_part}-{self.hour_part}.{self.platform}.{geo2_upper}.log.gz"
+        filename = f"{self.date_part}-{self.hour_part}.{SELECT_REGION}.{self.platform}.{geo2_upper}.log.gz"
         key = f"{self.date_part}-{self.hour_part}/{geo2_upper}/{self.platform}/{filename}"
 
         try:
