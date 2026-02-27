@@ -162,31 +162,23 @@ class BufferedUploader:
             self.buffer.close()
 
 
-def transform_line(data, geo3):
-    os_name = data.get("platform", "")
-    osi = 0
-    if os_name == "android":
-        osi = 2
-    if os_name == "ios":
-        osi = 1
-
-    fields = [
-        geo3.upper(),
-        osi,
-        data.get("display_manager", ""),
-        data.get("deviceId", ""),
-        data.get("brand", ""),
-        data.get("user_agent", ""),
-        data.get("ip", ""),
-        data.get("language", ""),
-        data.get("timestamp", ""),
-        data.get("os_version", ""),
-        data.get("app_id", ""),
-        data.get("model", ""),
-        data.get("network_type", "")
-    ]
-
-    return "@".join(str(field) for field in fields)
+def transform_line(data):
+    record = {
+        "country_code": data.get("country_code", ""),
+        "platform": data.get("platform", ""),
+        "display_manager": data.get("display_manager", ""),
+        "deviceId": data.get("deviceId", ""),
+        "brand": data.get("brand", ""),
+        "user_agent": data.get("user_agent", ""),
+        "ip": data.get("ip", ""),
+        "language": data.get("language", ""),
+        "timestamp": data.get("timestamp", ""),
+        "os_version": data.get("os_version", ""),
+        "app_id": data.get("app_id", ""),
+        "model": data.get("model", ""),
+        "network_type": data.get("network_type", ""),
+    }
+    return json.dumps(record, ensure_ascii=False, separators=(",", ":"))
 
 
 def list_cos_keys(client, bucket_name, prefix):
@@ -327,7 +319,7 @@ def main():
                     device_filter.add(device_id)
 
                     uploader = get_uploader(platform, geo3)
-                    if uploader.write(transform_line(data, geo3)):
+                    if uploader.write(transform_line(data)):
                         file_written_lines += 1
 
                 stats["written_lines"] += file_written_lines
