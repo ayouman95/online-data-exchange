@@ -12,7 +12,7 @@ from io import BytesIO
 
 from qcloud_cos import CosConfig, CosS3Client
 import oss2
-from pybloom import BloomFilter
+from pybloom_live import BloomFilter
 
 
 # ================== 配置区 ==================
