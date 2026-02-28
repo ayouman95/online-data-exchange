@@ -5,6 +5,7 @@ import os
 import json
 import logging
 import time
+from pathlib import PurePosixPath
 from datetime import datetime, timedelta
 import pycountry
 import gzip
@@ -194,7 +195,8 @@ def list_cos_keys(client, bucket_name, prefix):
 
         for item in response.get("Contents", []):
             key = item["Key"]
-            if not key.endswith("/"):
+            filename = PurePosixPath(key).name
+            if not key.endswith("/") and not filename.startswith("ams"):
                 keys.append(key)
 
         if not response.get("isTruncated"):
