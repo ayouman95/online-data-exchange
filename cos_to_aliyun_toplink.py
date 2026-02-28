@@ -196,7 +196,7 @@ def list_cos_keys(client, bucket_name, prefix):
         for item in response.get("Contents", []):
             key = item["Key"]
             filename = PurePosixPath(key).name
-            if not key.endswith("/") and not filename.startswith("ams"):
+            if not key.endswith("/") and filename.startswith("VM"):
                 keys.append(key)
 
         if not response.get("isTruncated"):
