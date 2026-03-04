@@ -50,8 +50,9 @@ QPS_LIMITS = {
     ('ios', 'fra'): 20,
     ('android', 'deu'): 80,
     ('ios', 'deu'): 20,
-    ('android', 'rus'): 80,
-    ('ios', 'rus'): 20,
+    ('android', 'phl'): 100,
+    ('android', 'ind'): 100,
+    ('ios', 'usa'): 100,
     ('android', 'vnm'): 80,
     ('ios', 'vnm'): 20,
 }
