@@ -34,7 +34,7 @@ ALI_OSS_ENDPOINT = "https://oss-ap-southeast-3.aliyuncs.com"
 ALI_BUCKET_NAME = "toplink-shared-bucket"
 
 QPS_LIMITS = {
-    ('android', 'PAK'): 150,
+    ('android', 'pak'): 150,
     ('android', 'phl'): 150,
     ('android', 'ind'): 150,
     ('ios', 'usa'): 200,
