@@ -34,27 +34,12 @@ ALI_OSS_ENDPOINT = "https://oss-ap-southeast-3.aliyuncs.com"
 ALI_BUCKET_NAME = "toplink-shared-bucket"
 
 QPS_LIMITS = {
-    ('android', 'bgd'): 80,
-    ('ios', 'bgd'): 20,
-    ('android', 'egy'): 80,
-    ('ios', 'egy'): 20,
-    ('android', 'civ'): 80,
-    ('ios', 'civ'): 20,
-    ('android', 'mar'): 80,
-    ('ios', 'mar'): 20,
-    ('android', 'can'): 80,
-    ('ios', 'can'): 20,
-    ('android', 'gbr'): 80,
-    ('ios', 'gbr'): 20,
-    ('android', 'fra'): 80,
-    ('ios', 'fra'): 20,
-    ('android', 'deu'): 80,
-    ('ios', 'deu'): 20,
-    ('android', 'phl'): 100,
-    ('android', 'ind'): 100,
-    ('ios', 'usa'): 100,
-    ('android', 'vnm'): 80,
-    ('ios', 'vnm'): 100,
+    ('android', 'PAK'): 150,
+    ('android', 'phl'): 150,
+    ('android', 'ind'): 150,
+    ('ios', 'usa'): 200,
+    ('ios', 'vnm'): 200,
+    ('android', 'vnm'): 150,
 }
 
 BLOOM_FILTER_CAPACITY = sum(QPS_LIMITS.values()) * 3600
