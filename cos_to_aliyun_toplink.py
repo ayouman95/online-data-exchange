@@ -42,6 +42,16 @@ QPS_LIMITS = {
     ('android', 'vnm'): 150,
     ('ios', 'mex'): 100,
     ('android', 'mex'): 75,
+    ('android', 'idn'): 100,
+    ('ios', 'idn'): 100,
+    ('android', 'rus'): 100,
+    ('ios', 'rus'): 100,
+    ('android', 'tha'): 100,
+    ('ios', 'tha'): 100,
+    ('android', 'bra'): 100,
+    ('ios', 'bra'): 100,
+    ('android', 'gbr'): 100,
+    ('ios', 'gbr'): 100,
 }
 
 BLOOM_FILTER_CAPACITY = sum(QPS_LIMITS.values()) * 3600
