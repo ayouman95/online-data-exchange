@@ -35,13 +35,13 @@ ALI_BUCKET_NAME = "toplink-shared-bucket"
 
 QPS_LIMITS = {
     ('android', 'pak'): 150,
-    ('android', 'phl'): 75,
+    ('android', 'phl'): 300,
     ('android', 'ind'): 150,
     ('ios', 'usa'): 100,
     ('ios', 'vnm'): 200,
     ('android', 'vnm'): 150,
     ('ios', 'mex'): 100,
-    ('android', 'mex'): 75,
+    ('android', 'mex'): 100,
     ('android', 'idn'): 100,
     ('ios', 'idn'): 100,
     ('android', 'rus'): 100,
@@ -52,6 +52,12 @@ QPS_LIMITS = {
     ('ios', 'bra'): 100,
     ('android', 'gbr'): 100,
     ('ios', 'gbr'): 100,
+    ('android', 'ukr'): 125,
+    ('ios', 'ukr'): 125,
+    ('android', 'can'): 125,
+    ('ios', 'can'): 125,
+    ('android', 'egy'): 125,
+    ('ios', 'egy'): 125,
 }
 
 BLOOM_FILTER_CAPACITY = sum(QPS_LIMITS.values()) * 3600
