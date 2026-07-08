@@ -35,8 +35,9 @@ ALI_BUCKET_NAME = "toplink-shared-bucket"
 
 QPS_LIMITS = {
     ('android', 'pak'): 150,
-    ('android', 'phl'): 300,
+    ('android', 'phl'): 150,
     ('android', 'ind'): 150,
+    ('ios', 'ind'): 75,
     ('ios', 'usa'): 100,
     ('ios', 'vnm'): 200,
     ('android', 'vnm'): 150,
@@ -44,7 +45,7 @@ QPS_LIMITS = {
     ('android', 'mex'): 100,
     ('android', 'idn'): 100,
     ('ios', 'idn'): 100,
-    ('android', 'rus'): 100,
+    ('android', 'rus'): 175,
     ('ios', 'rus'): 100,
     ('android', 'tha'): 100,
     ('ios', 'tha'): 100,
